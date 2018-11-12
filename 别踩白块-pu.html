@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #box {
+            width: 400px;
+            height: 600px;
+            border: 1px solid black;
+            margin: 0 auto;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #container {
+            width: 100%;
+            height: 600px;
+
+            position: relative;
+        }
+
+        .row {
+            width: 100%;
+            height: 150px;
+        }
+
+        .white {
+            height: 150px;
+            width: 100px;
+            float: left;
+        }
+
+        .black {
+            background: black;
+        }
+
+        #btn {
+            margin-left: 30%;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 id="score">0</h2>
+    <div id="box">
+        <div id="container">
+
+        </div>
+    </div>
+    <button id="btn" onclick="click()">开始</button>
+</body>
+<script>
+    var speed = 4;
+    var timer;
+    var container = document.getElementById('container');
+    var box = document.getElementById('box');
+
+    document.getElementById("btn").click = function () {
+        box.onclick = function (e) {
+            dianji(e);
+        }
+        timer = setInterval(move, 100);
+    };
+    //随机产生黑块位置
+    function createBlack() {
+        var temp = ['white', 'white', 'white', 'white'];
+        var i = Math.floor(Math.random() * 4);
+        temp[i] = 'white black';
+        return temp;
+    }
+    //产生div
+    function createDiv(className) {
+        var div = document.createElement('div');
+        div.className = className;
+        return div;
+    }
+    //产生行
+    function createRow() {
+        var row = createDiv('row');
+        var array = createBlack();
+        container.appendChild(row);
+        for (var i = 0; i < 4; i++) {
+            row.appendChild(createDiv(array[i]));
+        }
+        if (container.firstChild == null) {
+            container.appendChild(row);
+        } else {
+            container.insertBefore(row, container.firstChild);
+        }
+    }
+    //删除最后一行
+    function deleteDiv() {
+        if (container.childNodes.length == 6) {
+            container.removeChild(container.lastChild);
+        }
+    }
+    //方块开始移动
+    function move() {
+        var top = parseInt(window.getComputedStyle(container, null)['top']);
+        if (speed + top > 0) {
+            top = 0;
+        } else {
+            top += speed;
+        }
+        container.style.top = top + "px";
+        if (top == 0) {
+            createRow();
+            container.style.top = "-100px";
+            deleteDiv();
+        }
+    };
+    //点击黑块
+    function dianji(e) {
+        if (e.target.className.indexOf('black') == -1) {
+            gameover();
+        } else {
+            e.target.className = "white";
+            add_score();
+        }
+    }
+    //分数
+    function add_score() {
+        var newscore = parseInt(document.getElementById('score').innerHTML) + 1;
+        document.getElementById('score').innerHTML = newscore;
+        if (newscore % 2 == 0) {
+            speedUp();
+        }
+    };
+    //游戏速度
+    function speedUp() {
+        speed += 2;
+    }
+    //游戏结束
+    function gameover() {
+        clearInterval(timer);
+        alert("你的最终得分是:" + document.getElementById('score').innerHTML + "!");
+    }
+</script>
+
+</html>
